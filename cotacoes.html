@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotações | Aliança Militar</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <!-- App no celular (PWA): ícone, nome e cor -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#202c52">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Propostas">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+
+  <main>
+    <div class="titulo-pagina">
+      <div>
+        <h1>Cotações geradas</h1>
+        <div class="sub" id="resumo"></div>
+      </div>
+      <a href="index.html" class="btn btn-dourado">+ Nova cotação</a>
+    </div>
+
+    <div class="card">
+      <div class="filtros">
+        <div class="busca"><input type="search" id="busca" placeholder="Pesquisar por nº, cliente ou vendedor" autocomplete="off"></div>
+      </div>
+      <div class="tabela-wrap">
+        <table class="tabela tabela-cards">
+          <thead>
+            <tr>
+              <th>Nº</th>
+              <th>Data</th>
+              <th>Empresa</th>
+              <th>Cliente</th>
+              <th>Vendedor(a)</th>
+              <th class="num">Valor total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="lista"><tr><td colspan="7" class="carregando">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Itens da cotação: seleção estilo Excel para copiar e colar no SAP -->
+  <dialog id="dlg-itens" class="dlg-itens">
+    <div class="dlg-corpo">
+      <div class="dlg-topo">
+        <h3 id="itens-titulo">Itens</h3>
+        <button type="button" class="btn btn-sm" id="itens-fechar">Fechar</button>
+      </div>
+      <p class="ajuda">
+        <strong>Clique e arraste</strong> sobre as células (como no Excel) e aperte <strong>Ctrl+C</strong>,
+        ou clique no <strong>nome da coluna</strong> para selecionar ela inteira.
+        O botão <strong>⧉</strong> ao lado do nome copia a coluna direto.
+      </p>
+      <div class="tabela-wrap">
+        <table class="tabela grade" id="grade"></table>
+      </div>
+      <div class="acoes" style="justify-content: space-between; margin-top: 14px">
+        <span class="contador" id="sel-info" style="margin: 0"></span>
+        <div class="acoes">
+          <button type="button" class="btn" id="btn-copiar-sel" disabled>Copiar seleção</button>
+          <button type="button" class="btn btn-primario" id="btn-copiar-tudo">Copiar tabela inteira</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/pages/cotacoes.js"></script>
+</body>
+</html>

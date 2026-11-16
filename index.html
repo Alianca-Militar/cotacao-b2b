@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova cotação | Aliança Militar</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <!-- App no celular (PWA): ícone, nome e cor -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#202c52">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Propostas">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+
+  <main>
+    <div class="titulo-pagina">
+      <div>
+        <h1 id="titulo">Nova cotação</h1>
+        <div class="sub">Pesquise os produtos à esquerda e monte a proposta à direita</div>
+      </div>
+      <button class="btn" id="btn-limpar">Começar nova cotação</button>
+    </div>
+
+    <div class="layout-cotacao" id="layout-cotacao">
+      <!-- Pesquisa de produtos -->
+      <section class="card painel-busca">
+        <h2>
+          Pesquisar produtos
+          <span class="modo-vis" role="group" aria-label="Modo de visualização">
+            <button type="button" data-modo="lista" title="Ver em lista">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+              Lista
+            </button>
+            <button type="button" data-modo="grade" title="Ver em grade, com fotos">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              Grade
+            </button>
+          </span>
+        </h2>
+        <div class="linha-busca">
+          <div class="busca">
+            <input type="search" id="busca" placeholder="Código ou descrição (ex: boina pmba)" autocomplete="off" autofocus>
+          </div>
+          <button class="btn btn-filtros" id="btn-filtros" type="button" title="Filtrar por grupo e corporação">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z"/></svg>
+            Filtros
+            <span class="badge" id="badge-filtros" hidden></span>
+          </button>
+        </div>
+        <div class="filtros-ativos" id="filtros-ativos" hidden></div>
+        <div class="contador" id="contador"></div>
+        <div class="resultados" id="resultados"><div class="carregando">Carregando produtos...</div></div>
+      </section>
+
+      <!-- Cotação -->
+      <section>
+        <div class="card">
+          <h2>Empresa e cliente</h2>
+          <div class="grid g4">
+            <div class="span4">
+              <label for="empresa">Empresa que está cotando *</label>
+              <select id="empresa"><option value="">Carregando...</option></select>
+            </div>
+            <div class="span2">
+              <label for="cliente">Nome do cliente *</label>
+              <input id="cliente" data-campo="cliente" placeholder="Nome do cliente ou instituição">
+            </div>
+            <div>
+              <label for="tipo_cliente">Tipo do cliente *</label>
+              <select id="tipo_cliente" data-campo="tipo_cliente">
+                <option value="">Selecione...</option>
+                <option value="PJ">PJ - Pessoa Jurídica</option>
+                <option value="PF">PF - Pessoa Física</option>
+              </select>
+            </div>
+            <div>
+              <label for="data">Data</label>
+              <input type="date" id="data" data-campo="data">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px" id="card-itens">
+          <h2>
+            Itens
+            <button class="btn btn-sm" id="btn-avulso">+ Item avulso</button>
+          </h2>
+          <div class="tabela-wrap">
+            <table class="tabela itens tabela-cards">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Descrição</th>
+                  <th class="centro">Und.</th>
+                  <th class="num">Quant.</th>
+                  <th class="num">Preço unit.</th>
+                  <th class="num">Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="itens"></tbody>
+            </table>
+          </div>
+
+          <div class="totais">
+            <div class="linha"><span>Subtotal</span><span class="valor" id="subtotal">R$ 0,00</span></div>
+            <div class="linha"><span id="lbl-descontos">Descontos</span><input id="descontos" data-campo="descontos" data-dinheiro value="0,00"></div>
+            <div class="linha"><span id="lbl-acrescimos">Acréscimos</span><input id="acrescimos" data-campo="acrescimos" data-dinheiro value="0,00"></div>
+            <div class="linha"><span>Frete</span><input id="frete" data-campo="frete" data-dinheiro value="0,00"></div>
+            <div class="linha total-geral"><span>Valor total</span><span class="valor" id="total">R$ 0,00</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px">
+          <h2>Condições</h2>
+          <div class="grid g3">
+            <div><label for="vendedor">Vendedor(a)</label><input id="vendedor" data-campo="vendedor" readonly class="somente-leitura" title="Vem do seu perfil"></div>
+            <div><label for="email">E-mail</label><input id="email" data-campo="email" readonly class="somente-leitura" title="Vem do seu login"></div>
+            <div><label for="whatsapp">WhatsApp</label><input id="whatsapp" data-campo="whatsapp" readonly class="somente-leitura" title="Vem do seu perfil"></div>
+            <div><label for="validade">Validade</label><input id="validade" data-campo="validade"></div>
+            <div><label for="entrega">Entrega *</label><select id="entrega" data-campo="entrega"></select></div>
+            <div><label for="pagamento">Pagamento *</label><select id="pagamento" data-campo="pagamento"></select></div>
+          </div>
+          <div style="margin-top: 12px">
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes" data-campo="observacoes" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="barra-salvar">
+          <div class="barra-info">
+            <span class="numero-cotacao nova" id="numero">Cotação ainda não salva</span>
+            <button type="button" class="resumo-barra" id="btn-ver-itens" title="Ver itens"><span id="resumo-barra">0 itens · R$ 0,00</span></button>
+          </div>
+          <div class="acoes">
+            <button class="btn" id="btn-salvar">Salvar</button>
+            <button class="btn btn-dourado" id="btn-imprimir">Salvar e imprimir</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Filtros da pesquisa de produtos -->
+  <dialog id="dlg-filtros">
+    <form method="dialog" id="form-filtros">
+      <h3>Filtrar produtos</h3>
+      <p class="ajuda">As opções de cada filtro se ajustam conforme você escolhe os outros.</p>
+      <div class="grid">
+        <div><label for="f-grupo">Grupo</label><select id="f-grupo" data-filtro="grupo"></select></div>
+        <div><label for="f-tipo">Tipo de corporação</label><select id="f-tipo" data-filtro="tipo_corporacao"></select></div>
+        <div><label for="f-corporacao">Corporação</label><select id="f-corporacao" data-filtro="corporacao"></select></div>
+      </div>
+      <div class="resumo-filtro" id="resumo-filtro"></div>
+      <div class="acoes" style="justify-content: space-between">
+        <button type="button" class="btn" id="btn-limpar-filtros">Limpar filtros</button>
+        <button type="submit" class="btn btn-primario" id="btn-aplicar-filtros">Ver produtos</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/combo.js"></script>
+  <script src="js/pages/nova.js"></script>
+</body>
+</html>

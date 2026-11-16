@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu perfil | Aliança Militar</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <!-- App no celular (PWA): ícone, nome e cor -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#202c52">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Propostas">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+
+  <main style="max-width: 760px">
+    <div class="titulo-pagina">
+      <div>
+        <h1>Meu perfil</h1>
+        <div class="sub">Esses dados saem como vendedor(a) nas cotações que você fizer</div>
+      </div>
+    </div>
+
+    <div class="aviso-primeiro" id="aviso-primeiro" hidden>
+      Bem-vindo(a)! Antes de começar, preencha seu nome e telefone. Eles vão aparecer nas suas cotações.
+    </div>
+
+    <form class="card" id="form-perfil">
+      <div class="grid g2">
+        <div class="span2"><label for="nome">Nome *</label><input id="nome" required placeholder="Como vai aparecer na cotação"></div>
+        <div><label for="telefone">Telefone / WhatsApp</label><input id="telefone" placeholder="(32) 99999-9999" inputmode="tel"></div>
+        <div><label for="email">E-mail (do login)</label><input id="email" readonly class="somente-leitura"></div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <label>Assinatura</label>
+        <p class="ajuda" style="margin: 0 0 8px">Desenhe com o mouse ou o dedo, ou envie uma imagem da sua assinatura (de preferência com fundo branco).</p>
+        <div class="assinatura-wrap">
+          <canvas id="assinatura" class="assinatura-pad"></canvas>
+          <span class="assinatura-dica" id="assinatura-dica">Assine aqui</span>
+        </div>
+        <div class="acoes" style="margin-top: 8px">
+          <button type="button" class="btn btn-sm" id="btn-limpar">Limpar</button>
+          <label class="btn btn-sm" style="margin: 0; color: var(--azul); font-size: 12.5px">
+            Enviar imagem <input type="file" id="arquivo" accept="image/*" hidden>
+          </label>
+        </div>
+      </div>
+
+      <div class="acoes" style="justify-content: flex-end; margin-top: 24px">
+        <button type="submit" class="btn btn-primario" id="btn-salvar">Salvar perfil</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/pages/perfil.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta Comercial | Aliança Militar</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <!-- App no celular (PWA): ícone, nome e cor -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#202c52">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Propostas">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+  <div class="barra-ferramentas">
+    <a href="cotacoes.html" class="bt">&larr; Cotações</a>
+    <a href="#" class="bt" id="bt-editar">Editar</a>
+    <button class="bt bt-principal" onclick="window.print()">Imprimir / Salvar PDF</button>
+  </div>
+
+  <div class="folha" id="folha">
+    <p style="text-align: center; padding: 40px; font-family: sans-serif">Carregando...</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/pages/imprimir.js"></script>
+</body>
+</html>

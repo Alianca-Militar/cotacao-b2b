@@ -1,0 +1,9 @@
+# Segredos e arquivos gerados
+.env
+js/env.js
+
+# Material de referência (não vai para o site)
+referencias/
+
+# Scripts do banco (rodados direto no Supabase; o site não usa)
+sql/

@@ -1,0 +1,30 @@
+# Gera js/env.js a partir das variáveis de ambiente do Netlify
+# (Site configuration > Environment variables: SUPABASE_URL e SUPABASE_ANON_KEY)
+[build]
+  command = "node scripts/gerar-config.js"
+  publish = "."
+
+# Arquivos internos que não devem ficar acessíveis no site publicado
+[[redirects]]
+  from = "/referencias/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/sql/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/scripts/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.env*"
+  to = "/404"
+  status = 404
+  force = true

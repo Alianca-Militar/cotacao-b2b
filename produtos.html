@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produtos | Aliança Militar</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <!-- App no celular (PWA): ícone, nome e cor -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#202c52">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Propostas">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+
+  <main>
+    <div class="titulo-pagina">
+      <div>
+        <h1>Produtos</h1>
+        <div class="sub">Altere o valor direto na tabela: ele é salvo assim que você sai do campo ou tecla Enter</div>
+      </div>
+      <div class="acoes">
+        <button class="btn" id="btn-importar">Importar CSV</button>
+        <button class="btn" id="btn-exportar">Exportar CSV</button>
+        <button class="btn" id="btn-reajuste">Reajustar valores</button>
+        <button class="btn btn-dourado" id="btn-novo">+ Novo produto</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="filtros">
+        <div class="busca"><input type="search" id="busca" placeholder="Pesquisar por código, cód. suporte ou descrição" autocomplete="off"></div>
+        <select id="filtro-grupo" style="width: 170px"><option value="">Todos os grupos</option></select>
+        <select id="filtro-tipo" style="width: 190px"><option value="">Todos os tipos de corp.</option></select>
+        <select id="filtro-corporacao" style="width: 180px"><option value="">Todas as corporações</option></select>
+        <select id="filtro-status" style="width: 140px">
+          <option value="">Todos status</option>
+          <option value="ativo" selected>Ativos</option>
+          <option value="inativo">Inativos</option>
+          <option value="sem_preco">Sem preço</option>
+        </select>
+        <span class="contador" id="contador" style="margin: 0"></span>
+      </div>
+      <div class="tabela-wrap">
+        <table class="tabela tabela-cards">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Cód. Aliança</th>
+              <th>Cód. Suporte</th>
+              <th>Descrição</th>
+              <th>Grupo</th>
+              <th>Corporação</th>
+              <th class="centro">Und.</th>
+              <th class="num">Valor (R$)</th>
+              <th class="centro">Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="lista"><tr><td colspan="10" class="carregando">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Sugestões de unidade de medida (montadas com os valores já cadastrados) -->
+  <datalist id="dl-und"></datalist>
+
+  <!-- Cadastro / edição -->
+  <dialog id="dlg-produto" class="dlg-largo">
+    <form method="dialog" id="form-produto">
+      <h3 id="dlg-titulo">Novo produto</h3>
+      <div class="grid g4">
+        <div><label for="p-cod_alianca">Cód. Aliança *</label><input id="p-cod_alianca" required></div>
+        <div><label for="p-cod_suporte">Cód. Suporte</label><input id="p-cod_suporte"></div>
+        <div><label for="p-und_medida">Und. medida</label><input id="p-und_medida" list="dl-und" value="UND"></div>
+        <div><label for="p-valor">Valor (R$)</label><input id="p-valor" inputmode="decimal" placeholder="sem preço"></div>
+
+        <div class="span4"><label for="p-descricao">Descrição *</label><input id="p-descricao" required></div>
+
+        <div><label for="p-grupo">Grupo</label><select id="p-grupo"></select></div>
+        <div><label for="p-tipo_corporacao">Tipo de corporação</label><select id="p-tipo_corporacao"></select></div>
+        <div><label for="p-corporacao">Corporação</label><select id="p-corporacao"></select></div>
+        <div>
+          <label for="p-status">Status</label>
+          <select id="p-status">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+
+        <div class="span4">
+          <label for="p-link_imagem">Link da imagem</label>
+          <div class="linha-imagem">
+            <input id="p-link_imagem" type="url" placeholder="https://...">
+            <img id="p-preview" class="thumb thumb-grande" alt="" hidden>
+          </div>
+        </div>
+      </div>
+      <p class="ajuda" style="margin: 12px 0 0">Não achou o grupo ou a corporação? Cadastre em <a href="cadastros.html" target="_blank">Cadastros</a> e reabra esta janela.</p>
+      <p class="ajuda" id="p-datas" style="margin: 4px 0 0"></p>
+      <div class="acoes">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Reajuste -->
+  <dialog id="dlg-reajuste">
+    <form method="dialog" id="form-reajuste">
+      <h3>Reajustar valores</h3>
+      <p class="ajuda" id="reajuste-info"></p>
+      <label for="r-percentual">Percentual (%), use negativo para reduzir</label>
+      <input id="r-percentual" inputmode="decimal" placeholder="Ex: 10 ou -5" required>
+      <div class="acoes">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-primario">Aplicar reajuste</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Importação -->
+  <dialog id="dlg-importar" class="dlg-largo">
+    <form method="dialog" id="form-importar">
+      <h3>Importar produtos (CSV)</h3>
+      <p class="ajuda">
+        Salve a planilha do Excel como <strong>CSV</strong>. A primeira linha deve ter o nome das colunas
+        (pode estar em qualquer ordem e pode faltar alguma, menos <code>cod_alianca</code> e <code>descricao</code>):<br>
+        <code>cod_alianca; cod_suporte; descricao; und_medida; valor; grupo; tipo_corporacao; corporacao; link_imagem; status</code><br>
+        Produtos com <code>cod_alianca</code> já cadastrado são <strong>atualizados</strong>; os novos são incluídos.<br>
+        Em <code>grupo</code>, <code>tipo_corporacao</code> e <code>corporacao</code> use o <strong>código</strong> ou a
+        <strong>descrição</strong> do cadastro. Os que ainda não existirem serão criados automaticamente
+        (com o mesmo texto como código e descrição) e podem ser ajustados depois em Cadastros.
+      </p>
+      <input type="file" id="i-arquivo" accept=".csv,.txt" required>
+      <p class="ajuda" id="i-previa" style="margin-top: 12px"></p>
+      <div class="acoes">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-primario" id="i-confirmar" disabled>Importar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/pages/produtos.js"></script>
+</body>
+</html>
