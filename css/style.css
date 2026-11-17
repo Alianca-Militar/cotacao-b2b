@@ -596,3 +596,10 @@ dialog.dlg-itens { width: min(1000px, 96vw); }
   /* ----- Perfil ----- */
   .assinatura-pad { height: 160px; }
 }
+
+/* ----- Botão WhatsApp ----- */
+.btn-whatsapp { background: #25d366; border-color: #25d366; color: #fff; }
+.btn-whatsapp:hover { background: #1ebe5b; border-color: #1ebe5b; }
+@media (max-width: 700px) {
+  .tabela-cards .cel-acoes .btn-whatsapp { order: -1; flex: 1 1 100%; padding: 11px; font-size: 14px; }
+}

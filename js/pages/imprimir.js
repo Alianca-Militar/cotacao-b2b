@@ -108,6 +108,94 @@ function htmlProposta(c, E, vendedor) {
   `;
 }
 
+// ============================================================
+// PDF + compartilhar (WhatsApp)
+// ============================================================
+let pdfPronto = null;     // { arquivo: File }
+
+function nomeArquivo(c, empresa) {
+  const cliente = String(c.cliente || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '_').slice(0, 40);
+  const [ano, mes, dia] = String(c.data || hojeISO()).slice(0, 10).split('-');
+  return `Proposta_${cliente}_${dia}-${mes}-${ano}.pdf`;
+}
+
+function botaoWhats(texto, habilitado) {
+  const bt = document.getElementById('bt-whatsapp');
+  bt.querySelector('span').textContent = texto;
+  bt.disabled = !habilitado;
+}
+
+function avisoWhats(html) {
+  const el = document.getElementById('aviso-whats');
+  el.innerHTML = html;
+  el.hidden = !html;
+}
+
+// Gera o PDF a partir da folha da proposta (cópia sem o zoom da tela do celular)
+async function gerarPdf(c, empresa) {
+  const copia = document.getElementById('folha').cloneNode(true);
+  copia.removeAttribute('id');
+  copia.classList.add('pdf');
+  const blob = await html2pdf().set({
+    margin: 0,
+    filename: nomeArquivo(c, empresa),
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.t-obs', '.t-rodape', '.assinatura'] },
+  }).from(copia).outputPdf('blob');
+  return new File([blob], nomeArquivo(c, empresa), { type: 'application/pdf' });
+}
+
+async function prepararCompartilhamento(c, empresa) {
+  if (typeof html2pdf === 'undefined') {
+    botaoWhats('WhatsApp indisponível', false);
+    return;
+  }
+  try {
+    botaoWhats('Preparando PDF...', false);
+    const arquivo = await gerarPdf(c, empresa);
+    pdfPronto = { arquivo };
+    botaoWhats('Enviar pelo WhatsApp', true);
+    if (qs('whatsapp')) {
+      document.getElementById('bt-whatsapp').classList.add('pulsar');
+      avisoWhats('PDF pronto! Toque em <strong>Enviar pelo WhatsApp</strong> e escolha a conversa.');
+    }
+  } catch (e) {
+    console.error(e);
+    botaoWhats('Erro ao gerar PDF', false);
+  }
+}
+
+async function compartilhar() {
+  if (!pdfPronto) return;
+  const { arquivo } = pdfPronto;
+  document.getElementById('bt-whatsapp').classList.remove('pulsar');
+
+  // Celular: abre o compartilhar do sistema (escolhe WhatsApp e depois a conversa)
+  if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+    try {
+      await navigator.share({ files: [arquivo], title: arquivo.name });
+      avisoWhats('');
+    } catch (e) {
+      if (e.name !== 'AbortError') avisoWhats(`Não foi possível compartilhar: ${esc(e.message)}`);
+    }
+    return;
+  }
+
+  // Computador (sem compartilhar nativo): baixa o PDF e abre o WhatsApp Web com a mensagem
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(arquivo);
+  a.download = arquivo.name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  window.open('https://web.whatsapp.com/', '_blank', 'noopener');
+  avisoWhats(`O PDF <strong>${esc(arquivo.name)}</strong> foi baixado. No WhatsApp Web, escolha a conversa e anexe o arquivo (clipe 📎).`);
+}
+
+document.getElementById('bt-whatsapp').addEventListener('click', compartilhar);
+
 (async () => {
   const id = qs('id');
   const $folha = document.getElementById('folha');
@@ -134,14 +222,16 @@ function htmlProposta(c, E, vendedor) {
     // O título vira o nome do arquivo ao "Salvar como PDF"
     document.title = `Proposta ${c.id} - ${c.cliente}`;
 
+    // Espera logo e assinatura carregarem (impressão e PDF)
+    const imagens = [...$folha.querySelectorAll('img')].map(img => img.complete ? null
+      : new Promise(ok => { img.onload = img.onerror = ok; }));
+    await Promise.all(imagens);
+
     if (qs('auto')) {
       history.replaceState(null, '', `imprimir.html?id=${c.id}`);
-      // Espera logo e assinatura carregarem antes de abrir a impressão
-      const imagens = [...$folha.querySelectorAll('img')].map(img => img.complete ? null
-        : new Promise(ok => { img.onload = img.onerror = ok; }));
-      await Promise.all(imagens);
       setTimeout(() => window.print(), 150);
     }
+    prepararCompartilhamento(c, empresa);
   } catch (e) {
     $folha.innerHTML = `<p class="msg">Erro ao carregar a cotação: ${esc(e.message)}</p>`;
   }
